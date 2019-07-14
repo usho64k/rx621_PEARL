@@ -3,6 +3,29 @@
 #include "pearl621.h"			//write at head of *****(project name).c and hwsetup.c
 #include "pearl621_intr.h"		//write at head of intprg.c
 
+#define TSK_MAX		8
+//Task Status
+
+typedef enum taskStatus
+{
+	E_NONE,
+	E_CREATED,
+	E_STARTED,
+	E_JUMPABLE,
+	E_SLEPT,
+	E_RESERVED01,
+	
+}E_STATE;
+
+typedef struct t_tsk
+{
+	int id;
+	E_STATE status;
+	(void *)taskfunc();
+}T_TSKARY;
+
+T_TSKARY tasks[TSK_MAX];
+static int taskCount = 0;
 
 
 //Timer interrupt setting(static)
@@ -54,25 +77,55 @@ void tmr_OS_Interrupt(void)
 	ena_intr_taskTimer();
 }
 
+
+
 void tskMainLoop(void)
 {
 	//MainLoop
+	while(1)
+	{
+	}
 }
 int createTask(int tskid,T_CTSK pk_ctsk)
 {
-	
+	if(taskCount < 8)
+	{
+		if((tskid < 8) && (tskid >= 0))
+		{
+			if((tasks[taskid].status & E_CREATED) == 0x00)
+			{ 
+				tasks[taskid].id = tskid;
+				tasks[taskid].status |= E_CREATED;
+				tasks[taskid].taskfunc = task;
+			}
+			else
+			{
+				return -4;
+			}
+		}
+		else
+		{
+			return -2;
+		}
+		taskCount++;
+	}
+	else
+	{
+		return -1;
+	}
+	return 0;
 }
 int deleteTask(int tskid)
 {
-	
+	return 0;	//undef
 }
 int startTask(int tskid)
 {
-	
+	return 0;	//undef
 }
 int sleepTask(int tskid,int millisecond)
 {
-	
+	tasks[id].status |= E_SLEPT;
 }
 int wakeupTask(int tskid)
 {
