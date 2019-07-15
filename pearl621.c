@@ -1,7 +1,6 @@
 #include "..\iodefine.h"		//use iodefine.h
 
 #include "pearl621.h"			//write at head of *****(project name).c and hwsetup.c
-#include "pearl621_intr.h"		//write at head of intprg.c
 
 #include "pearl621_intr.h"
 #include "pearl621_task.h"

@@ -1,4 +1,5 @@
 #include "pearl621.h"
+#include "pearl621_task.h"
 
 //tasks
 #define TSK_NO_DEFINE	-1
@@ -17,12 +18,17 @@ typedef enum taskStatus
 	E_STATEMAX
 }E_STATE;
 
+
 //internal task data
 typedef struct t_tsk
 {
-	int id;
-	E_STATE status;
-	void (*taskfunc)();
+	int id;					//task id
+	int *judge;				//task movejudge pointer
+	int *judgeResult;		//task movejudgement Result
+	E_JTYPE jType;			//task movejudgement Type
+	
+	E_STATE status;			//task status
+	void (*taskfunc)();		//task function
 }T_TSKARY;
 
 //
@@ -73,24 +79,47 @@ int createTask(int tskid,T_CTSK pk_ctsk)
 	}
 	return 0;
 }
+
+//delete(User)
 int deleteTask(int tskid)
 {
 	return 0;	//undef
 }
+
+//start(User)
 int startTask(int tskid)
 {
+	int i;
+	for(i = 0; i < 8; i++)
+	{
+		if(execute[i] == tskid)
+		{
+			return;					//not allow to "double input"
+		}
+		if(execute[i] == TSK_NO_DEFINE)
+		{
+			execute[i] = tskid;		//input tskid to "no-define"
+			return;			
+		}
+	}
 	return 0;	//undef
 }
+
+//sleep(User)
 int sleepTask(int tskid,int millisecond)
 {
 	tasks[tskid].status |= E_SLEPT;		//task to be slept.
 	return 0;
 }
+
+//wakeup(User)
 int wakeupTask(int tskid)
 {
 	tasks[tskid].status &= ~E_SLEPT;	//task to wake up.
 	return 0;
 }
+
+//execute(pearl621)
 int executeTask(void)
 {
 	int i;
