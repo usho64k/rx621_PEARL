@@ -18,6 +18,7 @@ void tskMainLoop(void)
 	//OS‚ÌƒƒCƒ“ƒ‹[ƒv
 	while(1)
 	{
+		selectTask();
 		executeTask();
 	}
 }

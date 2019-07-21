@@ -3,9 +3,14 @@
 
 //Timer interrupt setting(static)
 static int app_timcnt;
+
+//Timer interrupt en/disable
 static dis_intr_taskTimer(void);
 static ena_intr_taskTimer(void);
 
+/********************************************************/
+/*					Public function						*/
+/********************************************************/
 //Timer interrupt setting for OS
 static dis_intr_taskTimer(void)
 {
@@ -16,6 +21,10 @@ static ena_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 1;
 }
+
+/********************************************************/
+/*					Public function						*/
+/********************************************************/
 //Timer definition for OS
 void tmr_OS_Initialize(void)
 {

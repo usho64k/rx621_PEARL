@@ -4,6 +4,7 @@
 //tasks
 #define TSK_NO_DEFINE	-1
 
+//タスクステータス(作成したとか動かせるとかそういう状態)
 typedef enum taskStatus
 {
 	E_NONE,
@@ -18,38 +19,48 @@ typedef enum taskStatus
 	E_STATEMAX
 }E_STATE;
 
-
 //internal task data
 typedef struct t_tsk
 {
-	int id;					//task id
-	int *judge;				//task movejudge pointer
-	int *judgeResult;		//task movejudgement Result
-	E_JTYPE jType;			//task movejudgement Type
-	
-	E_STATE status;			//task status
-	void (*taskfunc)();		//task function
+	int id;							//task id
+	int pri;						//task priority
+	E_STATE status;					//task status
+	T_FUNKS funcs[TSKFUNK_MAX];		//task functionModule
+	int funcExecNum;				//task function executing
+	int funcCount;					//task function count
 }T_TSKARY;
 
-//
+//内部タスク本体
 T_TSKARY tasks[TSK_MAX];		//internalTask information
 static int execute[TSK_MAX];	//executeTask que
 static int taskCount = 0;		//nodef
 
+/********************************************************/
+/*					Public function						*/
+/********************************************************/
 int initTask(void)
 {
-	int i;
+	int i,j;
 	//taskque reset
 	for(i = 0; i < TSK_MAX; i++)
 	{
 		tasks[i].id = TSK_NO_DEFINE;
-		tasks[i].taskfunc = (void *)(0);
+		tasks[i].pri = 0;
+		tasks[i].status = E_NONE;
+		for(j = 0; j < TSKFUNK_MAX; j++)
+		{
+			tasks[i].funcs[j].judge.jType = E_NOTYPE;
+			tasks[i].funcs[j].judge.moveVal = (void *)(0);
+			tasks[i].funcs[j].judge.moveRes = (void *)(0);
+			tasks[i].funcs[j].po = (void *)(0);
 		execute[i] = TSK_NO_DEFINE;
 	}
+	taskCount = 0;
 	return 0;
 }
 
-int createTask(int tskid,T_CTSK pk_ctsk)
+//タスク作成(タスク関数は作らない)
+int createTask(int tskid,T_TSK pk_ctsk)
 {
 	//input to T_TSKARY tasks
 	if(taskCount < TSK_MAX)
@@ -60,7 +71,6 @@ int createTask(int tskid,T_CTSK pk_ctsk)
 			{ 
 				tasks[tskid].id = tskid;
 				tasks[tskid].status |= E_CREATED;
-				tasks[tskid].taskfunc = pk_ctsk.task;
 				taskCount++;
 			}
 			else
@@ -77,6 +87,23 @@ int createTask(int tskid,T_CTSK pk_ctsk)
 	{
 		return -1;	//taskCount over
 	}
+	return 0;
+}
+
+//関数セット
+int setTaskFunc(int tskid,T_FUNKS func);
+{
+	int fCount = tasks[tskid].funcCount;
+	
+	//関数セット処理
+	tasks[tskid].funcs[fCount].po = func.po;
+	tasks[tskid].funcs[fCount].judge.jType = func.judge.jType;
+	tasks[tskid].funcs[fCount].judge.moveVal = func.judge.moveVal;
+	tasks[tskid].funcs[fCount].judge.moveRes = func.judge.moveRes;
+	
+	//関数増加
+	tasks[tskid].funcCount++;
+	
 	return 0;
 }
 
@@ -118,7 +145,10 @@ int wakeupTask(int tskid)
 	tasks[tskid].status &= ~E_SLEPT;	//task to wake up.
 	return 0;
 }
-
+int selectTask(void)
+{
+	
+}
 //execute(pearl621)
 int executeTask(void)
 {
@@ -129,7 +159,7 @@ int executeTask(void)
 		return 0;	//[TODO]ここで待機する
 	}
 	//else
-	pFunc = tasks[execute[0]].taskfunc;	//get next function to execute
+	pFunc = tasks[execute[0]].;	//get next function to execute
 	
 	for(i = 0; i < TSK_MAX; i++)
 	{
