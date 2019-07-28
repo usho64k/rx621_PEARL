@@ -53,6 +53,7 @@ int initTask(void)
 			tasks[i].funcs[j].judge.moveVal = (void *)(0);
 			tasks[i].funcs[j].judge.moveRes = (void *)(0);
 			tasks[i].funcs[j].po = (void *)(0);
+		}
 		execute[i] = TSK_NO_DEFINE;
 	}
 	taskCount = 0;
@@ -145,9 +146,53 @@ int wakeupTask(int tskid)
 	tasks[tskid].status &= ~E_SLEPT;	//task to wake up.
 	return 0;
 }
+//select(pearl621)
 int selectTask(void)
 {
-	
+	int i,j;
+	int iPri;
+	//実行タスク列の状態
+	for(iPri = 0; iPri < 16; iPri++)
+	{
+		for(i = 0; i < taskCount; i++)
+		{
+			//Priorityが合わなければ次のタスクを判定する
+			if(tasks[i].pri != iPri)
+			{
+				continue;
+			}
+			//現在のタスク実行列に登録済みでもスルーする
+			for(j = 0;(execute[j] < 0) && (execute[j] != i); j++);
+			if(execute[j] == i)
+			{
+				continue;
+			}
+			//どちらでもないのなら実行条件と照らし合わせる
+			if(tasks[i].funcExecNum != 0)
+			{
+				//0でないなら、判定式
+				//最大値なら最初と判定する
+				if(tasks[i].funcExecNum == tasks[i].funcCount)
+				{
+					tasks[i].funcExecNum = 1;
+				}
+				else
+				{
+					tasks[i].funcExecNum++;
+				}
+				if((*(tasks[i].funcs[funcExecNum].moveVal)) == (*(tasks[i].funcs[funcExecNum].moveRes)))
+				{
+					execute[j] = i;
+				}
+			}
+			else
+			{
+				//待機列に追加
+				execute[j] = i;
+			}
+			
+		}
+	}
 }
 //execute(pearl621)
 int executeTask(void)
