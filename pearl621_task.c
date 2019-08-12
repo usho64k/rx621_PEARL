@@ -8,14 +8,21 @@
 typedef enum taskStatus
 {
 	E_NONE,
-	E_CREATED,
-	E_STARTED,
-	E_JUMPABLE,
-	E_SLEPT,
-	E_RESERVED01,
-	E_RESERVED02,
-	E_RESERVED03,
-	E_ENWUP,
+	E_CREATED,				//Createフラグ
+	E_STARTED,				//Startフラグ
+	E_JUMPABLE,				//判定用、実行列取得～実行完了まで
+	E_SLEPT,				//スリープ状態
+	E_RESERVED05,
+	E_RESERVED06,
+	E_RESERVED07,
+	E_ENWUP,				//起動判定終了、実行配列配備待機
+	E_RESERVED09,
+	E_RESERVED0A,
+	E_EXECUTABLE,			//実行配列配備完了、稼働待機
+	E_RESERVED0C,
+	E_RESERVED0D,
+	E_RESERVED0E,
+	E_RESERVED0F,
 	E_STATEMAX
 }E_STATE;
 
@@ -64,35 +71,28 @@ int initTask(void)
 int createTask(int tskid,T_TSK pk_ctsk)
 {
 	//input to T_TSKARY tasks
-	if(taskCount < TSK_MAX)
+	if(taskCount >= TSK_MAX)
 	{
-		if((tskid < TSK_MAX) && (tskid >= 0))
-		{
-			if((tasks[tskid].status & E_CREATED) == 0x00)
-			{ 
-				tasks[tskid].id = tskid;
-				tasks[tskid].status |= E_CREATED;
-				taskCount++;
-			}
-			else
-			{
-				return -4;	//[tskid] is created other function.
-			}
-		}
-		else
-		{
-			return -2;	//[tskid] is out of range
-		}
+		return -1;	//タスク数オーバー
 	}
-	else
+	if((tskid >= TSK_MAX) || (tskid < 0))
 	{
-		return -1;	//taskCount over
+		return -2;	//tskid範囲外
 	}
+	if((tasks[tskid].status & E_CREATED) != 0x00)
+	{
+		return -4;	//tskidカブリ
+	}
+	
+	//タスクID登録
+	tasks[tskid].id = tskid;
+	tasks[tskid].status |= E_CREATED;
+	taskCount++;
 	return 0;
 }
 
 //関数セット
-int setTaskFunc(int tskid,T_FUNKS func);
+int setTaskFunc(int tskid,T_FUNKS func)
 {
 	int fCount = tasks[tskid].funcCount;
 	
@@ -117,20 +117,14 @@ int deleteTask(int tskid)
 //start(User)
 int startTask(int tskid)
 {
-	int i;
-	for(i = 0; i < 8; i++)
+	
+	if((tasks[tskid].status & E_CREATED) == 0x00)
 	{
-		if(execute[i] == tskid)
-		{
-			return;					//not allow to "double input"
-		}
-		if(execute[i] == TSK_NO_DEFINE)
-		{
-			execute[i] = tskid;		//input tskid to "no-define"
-			return;			
-		}
+		return -1;		//Createされてない
 	}
-	return 0;	//undef
+	tasks[tskid].status |= E_STARTED;
+	tasks[tskid].status |= E_ENWUP;
+	return 0;
 }
 
 //sleep(User)
@@ -144,68 +138,87 @@ int sleepTask(int tskid,int millisecond)
 int wakeupTask(int tskid)
 {
 	tasks[tskid].status &= ~E_SLEPT;	//task to wake up.
+	tasks[tskid].status |= E_ENWUP;
 	return 0;
 }
 //select(pearl621)
 int selectTask(void)
 {
 	int i,j;
-	int iPri;
 	//実行タスク列の状態
-	for(iPri = 0; iPri < 16; iPri++)
+	for(i = 0; i < taskCount; i++)
 	{
-		for(i = 0; i < taskCount; i++)
+		if((tasks[i].status & E_SLEPT) == 0x00)
 		{
-			//Priorityが合わなければ次のタスクを判定する
-			if(tasks[i].pri != iPri)
+			//入れられないけどexecutableに変化可能なタスク
+			int exeFunc = tasks[i].funcExecNum;
+			int argument = *(tasks[i].funcs[exeFunc].judge.moveVal);
+			int response = *(tasks[i].funcs[exeFunc].judge.moveRes);
+			
+			//[TODO]jTypeによって判定式を変える
+			if(argument == response)
 			{
-				continue;
+				tasks[i].status &= ~E_SLEPT;
+				tasks[i].status |= E_ENWUP;
 			}
-			//現在のタスク実行列に登録済みでもスルーする
-			for(j = 0;(execute[j] < 0) && (execute[j] != i); j++);
-			if(execute[j] == i)
+		}
+		else if(tasks[i].status == E_EXECUTABLE)
+		{
+			//入れられるタスク
+			//Executableならまだexecute配列に入っていない(と思う)
+			for(j = 0; j < taskCount; j++)
 			{
-				continue;
-			}
-			//どちらでもないのなら実行条件と照らし合わせる
-			if(tasks[i].funcExecNum != 0)
-			{
-				//0でないなら、判定式
-				//最大値なら最初と判定する
-				if(tasks[i].funcExecNum == tasks[i].funcCount)
-				{
-					tasks[i].funcExecNum = 1;
-				}
-				else
-				{
-					tasks[i].funcExecNum++;
-				}
-				if((*(tasks[i].funcs[funcExecNum].moveVal)) == (*(tasks[i].funcs[funcExecNum].moveRes)))
+				if(execute[j] == TSK_NO_DEFINE)
 				{
 					execute[j] = i;
+					tasks[i].status &= ~E_ENWUP;
+					break;
+				}
+				
+				//優先度を考慮してその間に入れる
+				if(tasks[execute[j]].pri < tasks[i].pri)
+				{
+					int k;
+					//後ろのタスクをすべて後ろに追いやる
+					for(k = TSK_MAX - 1; k > j; k--)
+					{
+						execute[k] = execute[k - 1];
+					}
+					execute[j] = i;
+					tasks[i].status &= ~E_ENWUP;
+					break;
 				}
 			}
-			else
-			{
-				//待機列に追加
-				execute[j] = i;
-			}
-			
 		}
 	}
+	return 0;
 }
 //execute(pearl621)
 int executeTask(void)
 {
 	int i;
+	int exeFunc = tasks[execute[0]].funcExecNum;
 	void (*pFunc)();
+	
 	if(execute[0] < 0)
 	{
+		//実行可能なし
 		return 0;	//[TODO]ここで待機する
 	}
 	//else
-	pFunc = tasks[execute[0]].;	//get next function to execute
+	pFunc = tasks[execute[0]].funcs[exeFunc].po;	//get next function to execute
 	
+	//次に実行する関数の番号を指定する
+	if(exeFunc == tasks[execute[0]].funcCount)
+	{
+		tasks[execute[0]].funcExecNum = 1;
+	}
+	else
+	{
+		tasks[execute[0]].funcExecNum++;
+	}
+	
+	//タスク実行配列を整備する
 	for(i = 0; i < TSK_MAX; i++)
 	{
 		if(i != TSK_MAX - 1)
@@ -218,6 +231,7 @@ int executeTask(void)
 		}
 	}
 	
+	//タスク実行
 	pFunc();		//execute
 	
 	return 1;
