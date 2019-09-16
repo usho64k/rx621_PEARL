@@ -1,5 +1,9 @@
+#include "testcode/main.h"
 #include "pearl621_intr.h"
+
+#ifndef MAIN_H
 #include "..\iodefine.h"
+#endif
 
 //Timer interrupt setting(static)
 static int app_timcnt;
@@ -12,6 +16,7 @@ static ena_intr_taskTimer(void);
 /*					Public function						*/
 /********************************************************/
 //Timer interrupt setting for OS
+#ifndef MAIN_H
 static dis_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 0;
@@ -21,11 +26,24 @@ static ena_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 1;
 }
+#else
+//OS検査用
+static dis_intr_taskTimer(void)
+{
+    return;
+}
+
+static ena_intr_taskTimer(void)
+{
+    return;
+}
+#endif
 
 /********************************************************/
 /*					Public function						*/
 /********************************************************/
 //Timer definition for OS
+#ifndef MAIN_H
 void tmr_OS_Initialize(void)
 {
 	//For RX621(Clock speed -> 48MHz)
@@ -47,6 +65,13 @@ void tmr_OS_Initialize(void)
 	ICU.IPR[0x68].BYTE = 0x0F;	//interrupt priority is 15(Max)
 	//vector table =>174
 }
+#else
+void tmr_OS_Initialize(void)
+{
+    app_timcnt = 0;
+}
+#endif
+
 //Set at vector table 174
 void tmr_OS_Interrupt(void)
 {

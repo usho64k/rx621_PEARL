@@ -1,10 +1,12 @@
-#include "..\iodefine.h"		//use iodefine.h
-
+#include "testcode/main.h"
 #include "pearl621.h"			//write at head of *****(project name).c and hwsetup.c
 
 #include "pearl621_intr.h"
 #include "pearl621_task.h"
 
+#ifdef MAIN_H
+#include <stdio.h>
+#endif
 
 void pearl621_init(void)
 {
@@ -16,10 +18,12 @@ void pearl621_init(void)
 void tskMainLoop(void)
 {
 	//OS‚ÌƒƒCƒ“ƒ‹[ƒv
+	int i;
 	while(1)
 	{
 		selectTask();
 		executeTask();
+		printf("executed #%d",i);
 	}
 }
 
