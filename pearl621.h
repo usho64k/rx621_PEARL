@@ -26,7 +26,7 @@ typedef struct t_tskExinf{
 
 //タスク関数
 typedef struct t_taskfunks{
-	T_JUDGE		judge;		//関数の実行条件
+	const T_JUDGE		*judge;		//関数の実行条件
 	void 		(*po)();	//実行する関数ポインタ
 }T_FUNKS;
 
@@ -38,13 +38,13 @@ typedef struct t_ctsk{
 }T_TSK;
 
 //produced function for Task
-extern int createTask(int tskid,T_TSK pk_ctsk);	//pearl621Task.c
+extern int createTask(int tskid,const T_TSK *pk_ctsk);	//pearl621Task.c
 extern int deleteTask(int tskid);					//pearl621Task.c
 extern int startTask(int tskid);					//pearl621Task.c
 extern int sleepTask(int tskid,int millisecond);	//pearl621Task.c
 extern int wakeupTask(int tskid);					//pearl621Task.c
 
-extern int setTaskFunc(int tskid,T_FUNKS func);		//pearl621Task.c
+extern int setTaskFunc(int tskid,const T_FUNKS *func);		//pearl621Task.c
 
 #define TSK_MAX		8
 #define TSKFUNK_MAX	24

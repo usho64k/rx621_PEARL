@@ -57,8 +57,8 @@ int initTask(void)
 		for(j = 0; j < TSKFUNK_MAX; j++)
 		{
 			tasks[i].funcs[j].judge.jType = E_NOTYPE;
-			tasks[i].funcs[j].judge.moveVal = (void *)(0);
-			tasks[i].funcs[j].judge.moveRes = (void *)(0);
+			tasks[i].funcs[j].judge->moveVal = (void *)(0);
+			tasks[i].funcs[j].judge->moveRes = (void *)(0);
 			tasks[i].funcs[j].po = (void *)(0);
 		}
 		execute[i] = TSK_NO_DEFINE;
@@ -68,7 +68,7 @@ int initTask(void)
 }
 
 //タスク作成(タスク関数は作らない)
-int createTask(int tskid,T_TSK pk_ctsk)
+int createTask(int tskid,const T_TSK *pk_ctsk)
 {
 	//input to T_TSKARY tasks
 	if(taskCount >= TSK_MAX)
@@ -92,15 +92,15 @@ int createTask(int tskid,T_TSK pk_ctsk)
 }
 
 //関数セット
-int setTaskFunc(int tskid,T_FUNKS func)
+int setTaskFunc(int tskid,const T_FUNKS *func)
 {
 	int fCount = tasks[tskid].funcCount;
 	
 	//関数セット処理
-	tasks[tskid].funcs[fCount].po = func.po;
-	tasks[tskid].funcs[fCount].judge.jType = func.judge.jType;
-	tasks[tskid].funcs[fCount].judge.moveVal = func.judge.moveVal;
-	tasks[tskid].funcs[fCount].judge.moveRes = func.judge.moveRes;
+	tasks[tskid].funcs[fCount].po = func->po;
+	tasks[tskid].funcs[fCount].judge.jType = func->judge.jType;
+	tasks[tskid].funcs[fCount].judge.moveVal = func->judge.moveVal;
+	tasks[tskid].funcs[fCount].judge.moveRes = func->judge.moveRes;
 	
 	//関数増加
 	tasks[tskid].funcCount++;
