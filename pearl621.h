@@ -26,7 +26,7 @@ typedef struct t_tskExinf{
 
 //タスク関数
 typedef struct t_taskfunks{
-	const T_JUDGE		*judge;		//関数の実行条件
+	T_JUDGE		*judge;		//関数の実行条件
 	void 		(*po)();	//実行する関数ポインタ
 }T_FUNKS;
 

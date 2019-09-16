@@ -56,7 +56,7 @@ int initTask(void)
 		tasks[i].status = E_NONE;
 		for(j = 0; j < TSKFUNK_MAX; j++)
 		{
-			tasks[i].funcs[j].judge.jType = E_NOTYPE;
+			tasks[i].funcs[j].judge->jType = E_NOTYPE;
 			tasks[i].funcs[j].judge->moveVal = (void *)(0);
 			tasks[i].funcs[j].judge->moveRes = (void *)(0);
 			tasks[i].funcs[j].po = (void *)(0);
@@ -98,9 +98,9 @@ int setTaskFunc(int tskid,const T_FUNKS *func)
 	
 	//関数セット処理
 	tasks[tskid].funcs[fCount].po = func->po;
-	tasks[tskid].funcs[fCount].judge.jType = func->judge.jType;
-	tasks[tskid].funcs[fCount].judge.moveVal = func->judge.moveVal;
-	tasks[tskid].funcs[fCount].judge.moveRes = func->judge.moveRes;
+	tasks[tskid].funcs[fCount].judge->jType = func->judge->jType;
+	tasks[tskid].funcs[fCount].judge->moveVal = func->judge->moveVal;
+	tasks[tskid].funcs[fCount].judge->moveRes = func->judge->moveRes;
 	
 	//関数増加
 	tasks[tskid].funcCount++;
@@ -152,8 +152,8 @@ int selectTask(void)
 		{
 			//入れられないけどexecutableに変化可能なタスク
 			int exeFunc = tasks[i].funcExecNum;
-			int argument = *(tasks[i].funcs[exeFunc].judge.moveVal);
-			int response = *(tasks[i].funcs[exeFunc].judge.moveRes);
+			int argument = *(tasks[i].funcs[exeFunc].judge->moveVal);
+			int response = *(tasks[i].funcs[exeFunc].judge->moveRes);
 			
 			//[TODO]jTypeによって判定式を変える
 			if(argument == response)
