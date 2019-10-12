@@ -1,11 +1,7 @@
-#include "pearl621.h"
-#include "pearl621_task.h"
 
 #include "testcode/main.h"
-
-#ifdef MAIN_H
-#include <stdio.h>
-#endif
+#include "pearl621.h"
+#include "pearl621_task.h"
 
 //tasks
 #define TSK_NO_DEFINE	-1
@@ -152,7 +148,6 @@ int selectTask(void)
 	//実行タスク列の状態
 	for(i = 0; i < taskCount; i++)
 	{
-		printf("Select Func    ");
 		if(tasks[i].status == E_EXECUTABLE)
 		{
 			//入れられるタスク
@@ -164,7 +159,6 @@ int selectTask(void)
 					//tsk no define -> 100% this place.
 					execute[j] = i;
 					tasks[i].status &= ~E_ENWUP;
-					printf("Changed to wakeup\n");
 					break;
 				}
 				
@@ -173,14 +167,12 @@ int selectTask(void)
 				{
 					int k;
 					//後ろのタスクをすべて後ろに追いやる
-					printf("KOKO1");
 					for(k = TSK_MAX - 1; k > j; k--)
 					{
 						execute[k] = execute[k - 1];
 					}
 					execute[j] = i;
 					tasks[i].status &= ~E_ENWUP;
-					printf("KOKO2");
 					break;
 				}
 			}
@@ -191,16 +183,12 @@ int selectTask(void)
 			int exeFunc = tasks[i].funcExecNum;
 			int argument = *(tasks[i].funcs[exeFunc].judge->moveVal);
 			int response = *(tasks[i].funcs[exeFunc].judge->moveRes);
-			printf("try to Executable\n");
-			printf("tasks[i] nextExeFunc : %d\n",tasks[i].funcExecNum);
-			printf("tasks[i].status : %d\n",tasks[i].status);
 			
 			//[TODO]jTypeによって判定式を変える
 			if(argument == response)
 			{
 				tasks[i].status &= ~E_SLEPT;
 				tasks[i].status |= E_ENWUP;
-				printf("changed to Execute\n");
 			}
 		}
 	}
@@ -216,8 +204,6 @@ int executeTask(void)
 	int i;
 	int exeFunc = tasks[execute[0]].funcExecNum;
 	void (*pFunc)();
-
-	printf("execFunc      ");
 	
 	if(execute[0] < 0)
 	{
@@ -227,10 +213,8 @@ int executeTask(void)
 	//else
 	pFunc = tasks[execute[0]].funcs[exeFunc].po;	//get next function to execute
 	
-	printf("\tExecute!\n");
 	//タスク実行
 	pFunc();		//execute
-	printf("End\n");
 	
 	//次に実行する関数の番号を指定する
 	if(exeFunc >= tasks[execute[0]].funcCount - 1)

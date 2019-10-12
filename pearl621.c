@@ -4,9 +4,6 @@
 #include "pearl621_intr.h"
 #include "pearl621_task.h"
 
-#ifdef MAIN_H
-#include <stdio.h>
-#endif
 
 void pearl621_init(void)
 {
@@ -25,10 +22,6 @@ void tskMainLoop(void)
 		if(ercd == 0)
 		{
 			ercd = executeTask();
-		}
-		else
-		{
-			printf("No Select");
 		}
 	}
 }

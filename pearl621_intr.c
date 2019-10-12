@@ -1,7 +1,6 @@
-#include "testcode/main.h"
 #include "pearl621_intr.h"
 
-#ifndef MAIN_H
+#ifndef TESTCODE
 #include "..\iodefine.h"
 #endif
 
@@ -16,7 +15,7 @@ static void ena_intr_taskTimer(void);
 /*					Public function						*/
 /********************************************************/
 //Timer interrupt setting for OS
-#ifndef MAIN_H
+#ifndef TESTCODE
 static void dis_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 0;
@@ -43,7 +42,7 @@ static void ena_intr_taskTimer(void)
 /*					Public function						*/
 /********************************************************/
 //Timer definition for OS
-#ifndef MAIN_H
+#ifndef TESTCODE
 void tmr_OS_Initialize(void)
 {
 	//For RX621(Clock speed -> 48MHz)
