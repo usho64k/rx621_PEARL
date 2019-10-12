@@ -9,31 +9,31 @@
 static int app_timcnt;
 
 //Timer interrupt en/disable
-static dis_intr_taskTimer(void);
-static ena_intr_taskTimer(void);
+static void dis_intr_taskTimer(void);
+static void ena_intr_taskTimer(void);
 
 /********************************************************/
 /*					Public function						*/
 /********************************************************/
 //Timer interrupt setting for OS
 #ifndef MAIN_H
-static dis_intr_taskTimer(void)
+static void dis_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 0;
 }
 //Timer interrupt setting for OS
-static ena_intr_taskTimer(void)
+static void ena_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 1;
 }
 #else
 //OS検査用
-static dis_intr_taskTimer(void)
+static void dis_intr_taskTimer(void)
 {
     return;
 }
 
-static ena_intr_taskTimer(void)
+static void ena_intr_taskTimer(void)
 {
     return;
 }
@@ -68,6 +68,7 @@ void tmr_OS_Initialize(void)
 #else
 void tmr_OS_Initialize(void)
 {
+	//For Linux Test Env.(Clear the variable only)
     app_timcnt = 0;
 }
 #endif

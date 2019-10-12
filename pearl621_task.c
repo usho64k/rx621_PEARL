@@ -56,11 +56,14 @@ int initTask(void)
 		tasks[i].status = E_NONE;
 		for(j = 0; j < TSKFUNK_MAX; j++)
 		{
-			tasks[i].funcs[j].judge->jType = E_NOTYPE;
-			tasks[i].funcs[j].judge->moveVal = (void *)(0);
-			tasks[i].funcs[j].judge->moveRes = (void *)(0);
+			tasks[i].funcs[j].judge = (void *)(0);
+			//tasks[i].funcs[j].judge->jType = E_NOTYPE;
+			//tasks[i].funcs[j].judge->moveVal = (void *)(0);
+			//tasks[i].funcs[j].judge->moveRes = (void *)(0);
 			tasks[i].funcs[j].po = (void *)(0);
 		}
+		tasks[i].funcExecNum = 0;
+		tasks[i].funcCount = 0;
 		execute[i] = TSK_NO_DEFINE;
 	}
 	taskCount = 0;
