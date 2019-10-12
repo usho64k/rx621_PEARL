@@ -18,12 +18,18 @@ void pearl621_init(void)
 void tskMainLoop(void)
 {
 	//OS‚ÌƒƒCƒ“ƒ‹[ƒv
-	int i;
 	while(1)
 	{
-		selectTask();
-		executeTask();
-		printf("executed #%d",i);
+		int ercd;
+		ercd = selectTask();
+		if(ercd == 0)
+		{
+			ercd = executeTask();
+		}
+		else
+		{
+			printf("No Select");
+		}
 	}
 }
 
