@@ -4,6 +4,9 @@
 #include "pearl621_intr.h"
 #include "pearl621_task.h"
 
+#ifdef MAIN_H
+#include <stdio.h>
+#endif
 
 void pearl621_init(void)
 {
