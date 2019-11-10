@@ -1,7 +1,11 @@
 
-#include "testcode/main.h"
+//#include "testcode/main.h"
 #include "pearl621.h"
 #include "pearl621_task.h"
+
+#ifdef MAIN_H
+#include <stdio.h>
+#endif
 
 //tasks
 #define TSK_NO_DEFINE	-1

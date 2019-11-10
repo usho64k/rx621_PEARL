@@ -1,4 +1,4 @@
-#include "testcode/main.h"
+//#include "testcode/main.h"
 #include "pearl621.h"			//write at head of *****(project name).c and hwsetup.c
 
 #include "pearl621_intr.h"
@@ -22,6 +22,12 @@ void tskMainLoop(void)
 		if(ercd == 0)
 		{
 			ercd = executeTask();
+		}
+		else
+		{
+#ifdef MAIN_H
+			printf("No Select");
+#endif
 		}
 	}
 }

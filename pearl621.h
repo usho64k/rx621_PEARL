@@ -1,7 +1,6 @@
 #ifndef __PEARL621_H__
 #define __PEARL621_H__
 
-#define THIS_NULL		(void *)(0)
 
 //User Public header
 extern void pearl621_init(void);					//OS‰Šú‰»ŠÖ”
