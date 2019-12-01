@@ -4,5 +4,6 @@
 
 extern void tmr_OS_Initialize(void);				//timer for OS
 extern void tmr_OS_Interrupt(void);					//timer for OS
+extern int tmr_OS_GetTimer(void);					//timer for Task
 
 #endif

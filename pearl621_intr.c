@@ -84,3 +84,14 @@ void tmr_OS_Interrupt(void)
 	}
 	ena_intr_taskTimer();
 }
+
+int tmr_OS_GetTimer(void)
+{
+	int ret;
+	
+	dis_intr_taskTimer();
+	ret = app_timcnt;
+	ena_intr_taskTimer();
+	
+	return ret;
+}

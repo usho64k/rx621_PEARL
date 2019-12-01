@@ -2,6 +2,7 @@
 //#include "testcode/main.h"
 #include "pearl621.h"
 #include "pearl621_task.h"
+#include "pearl621_intr.h"
 
 //#include "testcode/main.h"
 
@@ -187,14 +188,26 @@ int selectTask(void)
 		{
 			//入れられないけどexecutableに変化可能なタスク
 			int exeFunc = tasks[i].funcExecNum;
-			int argument = *(tasks[i].funcs[exeFunc].judge->moveVal);
-			int response = *(tasks[i].funcs[exeFunc].judge->moveRes);
-			
-			//[TODO]jTypeによって判定式を変える
-			if(argument == response)
+			if(tasks[i].funcs[exeFunc].judge->jType == E_VALIABLE)
 			{
-				tasks[i].status &= ~E_SLEPT;
-				tasks[i].status |= E_ENWUP;
+				int argument = *(tasks[i].funcs[exeFunc].judge->moveVal);
+				int response = *(tasks[i].funcs[exeFunc].judge->moveRes);
+			
+				if(argument == response)
+				{
+					tasks[i].status &= ~E_SLEPT;
+					tasks[i].status |= E_ENWUP;
+				}
+			}
+			else if(tasks[i].funcs[exeFunc].judge->jType == E_TIMER)
+			{
+				int response = *(tasks[i].funcs[exeFunc].judge->moveRes);
+				
+				if(response == tmr_OS_GetTimer())
+				{
+					tasks[i].status &= ~E_SLEPT;
+					tasks[i].status |= E_ENWUP;
+				}
 			}
 		}
 	}
