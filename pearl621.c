@@ -1,11 +1,11 @@
-//#include "testcode/main.h"
 #include "pearl621.h"			//write at head of *****(project name).c and hwsetup.c
 
 #include "pearl621_intr.h"
 #include "pearl621_task.h"
 
-#ifdef MAIN_H
+#ifdef TESTCODE
 #include <stdio.h>
+#include "testcode/main.h"
 #endif
 
 void pearl621_init(void)

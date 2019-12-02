@@ -1,5 +1,8 @@
 
-//#include "testcode/main.h"
+#ifdef TESTCODE
+#include "testcode/main.h"
+#endif
+
 #include "pearl621.h"
 #include "pearl621_task.h"
 #include "pearl621_intr.h"

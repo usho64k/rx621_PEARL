@@ -1,7 +1,8 @@
-//#include "testcode/main.h"
 #include "pearl621_intr.h"
 
-#ifndef MAIN_H
+#ifdef TESTCODE
+#include "testcode/main.h"
+#else
 #include "..\iodefine.h"
 #endif
 

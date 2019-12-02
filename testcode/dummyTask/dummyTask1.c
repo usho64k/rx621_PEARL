@@ -2,6 +2,7 @@
 #include "dummyTask1.h"
 #include "../../pearl621.h"
 
+#define	THIS_NULL		((void *)0)
 #define TASK1_FUNC_NUM		3
 static int itIsTrue = 0;
 static int count;
