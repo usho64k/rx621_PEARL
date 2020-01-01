@@ -1,6 +1,9 @@
 //標準関数群
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 //OS
 #include "../pearl621.h"
@@ -22,6 +25,9 @@ static void startAllTasks(void);		//タスク起動
 
 int main(void)
 {
+	pid_t p_pid,pid;
+
+	printf("parent process : %d\n",p_pid = getpid());
 	//main
 	pearl621_init();
 	//ここにタスクを登録していく
@@ -30,11 +36,25 @@ int main(void)
 	//タスク実行
 	startAllTasks();
 	
+	switch(pid=fork())
+	{
+	case 0:
+		tskMainLoop();
+		exit(0);
+	case -1:
+		perror("fork");
+		break;
+	default:
+		printf("[%d]child pid=%d\n",p_pid,pid);
+		break;
+	}
 	//実行
-	tskMainLoop();
+	pid = wait(0);
+	printf("[%d]pid = %d end\n",p_pid,pid);
 
 	return 0;
 }
+
 static void makeAllTasks(void)
 {
 	makeTask_tsk1();
@@ -49,5 +69,3 @@ static void startAllTasks(void)
 	startTask(DUMTASK2_ID);
 	while(ercd < 0){printf("error at start[%d}\n",DUMTASK2_ID);}
 }
-
-

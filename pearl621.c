@@ -5,6 +5,9 @@
 
 #ifdef TESTCODE
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include "testcode/main.h"
 #endif
 
@@ -32,6 +35,9 @@ void tskMainLoop(void)
 			printf("No Select");
 #endif
 		}
+#ifdef MAIN_H
+		sleep(1);
+#endif
 	}
 }
 
