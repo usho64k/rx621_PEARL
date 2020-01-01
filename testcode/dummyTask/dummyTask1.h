@@ -1,7 +1,7 @@
 #ifndef TESTTASK_1
 #define TESTTASK_1
 
-int makeTask(void);
-int startTasks(void);
+#define DUMTASK1_ID		0
+int makeTask_tsk1(void);
 
 #endif

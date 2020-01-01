@@ -25,7 +25,7 @@ T_FUNKS funcThisTask[TASK1_FUNC_NUM] = {
 	{&judgeThisTask[2],countLoop2}
 };
 
-int makeTask(void)
+int makeTask_tsk1(void)
 {
 	int i,ercd = 0;
 	ercd = createTask(0,&task1);
@@ -35,14 +35,9 @@ int makeTask(void)
 		ercd = setTaskFunc(0,&funcThisTask[i]);
 		while(ercd < 0){printf("error at create");}
 	}
+	return 0;
 }
 
-int startTasks(void)
-{
-	int ercd = 0;
-	ercd = startTask(0);
-	while(ercd < 0){printf("error at start");}
-}
 
 static void countInit(void)
 {
