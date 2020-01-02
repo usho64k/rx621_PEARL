@@ -22,6 +22,7 @@
 
 static void makeAllTasks(void);			//タスク作成
 static void startAllTasks(void);		//タスク起動
+static void test_intrTimer(void);		//タイマ割り込み
 
 int main(void)
 {
@@ -33,9 +34,10 @@ int main(void)
 	//ここにタスクを登録していく
 	makeAllTasks();
 
-	//タスク実行
+	//タスク実行開始
 	startAllTasks();
 	
+	//タスク実行本体
 	switch(pid=fork())
 	{
 	case 0:
@@ -48,7 +50,24 @@ int main(void)
 		printf("[%d]child pid=%d\n",p_pid,pid);
 		break;
 	}
+
+	//割り込み実行本体
+	switch(pid=fork())
+	{
+	case 0:
+		test_intrTimer();
+		exit(0);
+	case -1:
+		perror("fork");
+		break;
+	default:
+		printf("[%d]child pid=%d\n",p_pid,pid);
+		break;
+	}
 	//実行
+
+	pid = wait(0);
+	printf("[%d]pid = %d end\n",p_pid,pid);
 	pid = wait(0);
 	printf("[%d]pid = %d end\n",p_pid,pid);
 
@@ -68,4 +87,13 @@ static void startAllTasks(void)
 	while(ercd < 0){printf("error at start[%d}\n",DUMTASK1_ID);}
 	startTask(DUMTASK2_ID);
 	while(ercd < 0){printf("error at start[%d}\n",DUMTASK2_ID);}
+}
+
+static void test_intrTimer(void)
+{
+	while(1)
+	{
+		sleep(1);
+		osTmrInterrupt();	//普通に割り込み関数を呼ぶだけ
+	}
 }
