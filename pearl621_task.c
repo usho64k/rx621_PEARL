@@ -210,8 +210,8 @@ int selectTask(void)
 				{
 					tasks[i].status &= ~E_SLEPT;
 					tasks[i].status |= E_ENWUP;
-					tasks[i].funcs[exeFunc].judge->moveRes += tasks[i].funcs[exeFunc].judge->moveVal;
-					tasks[i].funcs[exeFunc].judge->moveRes &= 0xFFFF;	//65536
+					*tasks[i].funcs[exeFunc].judge->moveRes += *tasks[i].funcs[exeFunc].judge->moveVal;
+					*tasks[i].funcs[exeFunc].judge->moveRes &= 0xFFFF;	//65536
 				}
 			}
 		}
