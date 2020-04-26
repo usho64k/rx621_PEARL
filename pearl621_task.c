@@ -16,21 +16,21 @@
 //tasks
 #define TSK_NO_DEFINE	-1
 
-//ƒ^ƒXƒNƒXƒe[ƒ^ƒX(ì¬‚µ‚½‚Æ‚©“®‚©‚¹‚é‚Æ‚©‚»‚¤‚¢‚¤ó‘Ô)
+//ã‚¿ã‚¹ã‚¯çŠ¶æ…‹ã«ã¤ã„ã¦
 typedef enum taskStatus
 {
 	E_NONE,
-	E_CREATED,				//Createƒtƒ‰ƒO
-	E_STARTED,				//Startƒtƒ‰ƒO
-	E_JUMPABLE,				//”»’è—pAÀs—ñæ“¾`ÀsŠ®—¹‚Ü‚Å
-	E_SLEPT,				//ƒXƒŠ[ƒvó‘Ô
+	E_CREATED,				//Createå®Œäº†
+	E_STARTED,				//Startå®Œäº†
+	E_JUMPABLE,				//Create ã‹ã¤ Start
+	E_SLEPT,				//ã‚¿ã‚¹ã‚¯å‹•ä½œãƒ•ãƒ©ã‚°æœªé”æˆ
 	E_RESERVED05,
 	E_RESERVED06,
 	E_RESERVED07,
-	E_ENWUP,				//‹N“®”»’èI—¹AÀs”z—ñ”z”õ‘Ò‹@
+	E_ENWUP,				//ã‚¿ã‚¹ã‚¯å‹•ä½œãƒ•ãƒ©ã‚°æ—¢é”æˆ
 	E_RESERVED09,
 	E_RESERVED0A,
-	E_EXECUTABLE,			//Às”z—ñ”z”õŠ®—¹A‰Ò“­‘Ò‹@
+	E_EXECUTABLE,			//å‹•ä½œå¯èƒ½(ENWUP & SLEPT)
 	E_RESERVED0C,
 	E_RESERVED0D,
 	E_RESERVED0E,
@@ -49,7 +49,7 @@ typedef struct t_tsk
 	int funcCount;					//task function count
 }T_TSKARY;
 
-//“à•”ƒ^ƒXƒN–{‘Ì
+//static valiables definition
 T_TSKARY tasks[TSK_MAX];		//internalTask information
 static int execute[TSK_MAX];	//executeTask que
 static int taskCount = 0;		//nodef
@@ -79,40 +79,40 @@ int initTask(void)
 	return 0;
 }
 
-//ƒ^ƒXƒNì¬(ƒ^ƒXƒNŠÖ”‚Íì‚ç‚È‚¢)
+//ã‚¿ã‚¹ã‚¯ä½œæˆ(é–¢æ•°åˆ—ã®è¦ªç‰ã‚’ä½œã‚‹)
 int createTask(int tskid,const T_TSK *pk_ctsk)
 {
 	//input to T_TSKARY tasks
 	if(taskCount >= TSK_MAX)
 	{
-		return -1;	//ƒ^ƒXƒN”ƒI[ƒo[
+		return -1;	//ã‚¿ã‚¹ã‚¯æ•°ã‚ªãƒ¼ãƒãƒ¼
 	}
 	if((tskid >= TSK_MAX) || (tskid < 0))
 	{
-		return -2;	//tskid”ÍˆÍŠO
+		return -2;	//tskidä¸æ­£
 	}
 	if((tasks[tskid].status & E_CREATED) != 0x00)
 	{
-		return -4;	//tskidƒJƒuƒŠ
+		return -4;	//tskidãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ã‚‹
 	}
 	
-	//ƒ^ƒXƒNID“o˜^
+	//ã‚¿ã‚¹ã‚¯IDã‚’ç™»éŒ²ã™ã‚‹
 	tasks[tskid].id = tskid;
 	tasks[tskid].status |= E_CREATED;
 	taskCount++;
 	return 0;
 }
 
-//ŠÖ”ƒZƒbƒg
+//ã‚¿ã‚¹ã‚¯é–¢æ•°ç™»éŒ²(é–¢æ•°åˆ—ã®ç™»éŒ²)
 int setTaskFunc(int tskid,const T_FUNKS *func)
 {
 	int fCount = tasks[tskid].funcCount;
 	
-	//ŠÖ”ƒZƒbƒgˆ—
+	//æŒ‡å®šã•ã‚ŒãŸã‚¿ã‚¹ã‚¯IDã®é–¢æ•°ã«ä¸€ã¤ãšã¤è¿½åŠ 
 	tasks[tskid].funcs[fCount].po = func->po;
 	tasks[tskid].funcs[fCount].judge = func->judge;
 	
-	//ŠÖ”‘‰Á
+	//é–¢æ•°åˆ—ã®æ•°ã‚’æ›´æ–°
 	tasks[tskid].funcCount++;
 	
 	return 0;
@@ -130,7 +130,7 @@ int startTask(int tskid)
 	
 	if((tasks[tskid].status & E_CREATED) == 0x00)
 	{
-		return -1;		//Create‚³‚ê‚Ä‚È‚¢
+		return -1;		//Createã•ã‚Œã¦ãªã„
 	}
 	tasks[tskid].status |= E_STARTED;
 	tasks[tskid].status |= E_ENWUP;
@@ -155,13 +155,13 @@ int wakeupTask(int tskid)
 int selectTask(void)
 {
 	int i,j;
-	//Àsƒ^ƒXƒN—ñ‚Ìó‘Ô
+	//ï¿½ï¿½ï¿½sï¿½^ï¿½Xï¿½Nï¿½ï¿½Ìï¿½ï¿½
 	for(i = 0; i < taskCount; i++)
 	{
 		if(tasks[i].status == E_EXECUTABLE)
 		{
-			//“ü‚ê‚ç‚ê‚éƒ^ƒXƒN
-			//Executable‚È‚ç‚Ü‚¾execute”z—ñ‚É“ü‚Á‚Ä‚¢‚È‚¢(‚Æv‚¤)
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½Xï¿½N
+			//Executableï¿½È‚ï¿½Ü‚ï¿½executeï¿½zï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½(ï¿½Ævï¿½ï¿½)
 			for(j = 0; j < taskCount; j++)
 			{
 				if(execute[j] == TSK_NO_DEFINE)
@@ -172,11 +172,11 @@ int selectTask(void)
 					break;
 				}
 				
-				//—Dæ“x‚ğl—¶‚µ‚Ä‚»‚ÌŠÔ‚É“ü‚ê‚é
+				//ï¿½Dï¿½ï¿½xï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ÌŠÔ‚É“ï¿½ï¿½ï¿½ï¿½
 				if(tasks[execute[j]].pri < tasks[i].pri)
 				{
 					int k;
-					//Œã‚ë‚Ìƒ^ƒXƒN‚ğ‚·‚×‚ÄŒã‚ë‚É’Ç‚¢‚â‚é
+					//ï¿½ï¿½ï¿½Ìƒ^ï¿½Xï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½×‚ÄŒï¿½ï¿½É’Ç‚ï¿½ï¿½ï¿½ï¿½
 					for(k = TSK_MAX - 1; k > j; k--)
 					{
 						execute[k] = execute[k - 1];
@@ -189,7 +189,7 @@ int selectTask(void)
 		}
 		else if((tasks[i].status & E_SLEPT) == 0x00)
 		{
-			//“ü‚ê‚ç‚ê‚È‚¢‚¯‚Çexecutable‚É•Ï‰»‰Â”\‚Èƒ^ƒXƒN
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½executableï¿½É•Ï‰ï¿½ï¿½Â”\ï¿½Èƒ^ï¿½Xï¿½N
 			int exeFunc = tasks[i].funcExecNum;
 			if(tasks[i].funcs[exeFunc].judge->jType == E_VALIABLE)
 			{
@@ -231,16 +231,16 @@ int executeTask(void)
 	
 	if(execute[0] < 0)
 	{
-		//Às‰Â”\‚È‚µ
-		return -16;	//[TODO]‚±‚±‚Å‘Ò‹@‚·‚é
+		//ï¿½ï¿½ï¿½sï¿½Â”\ï¿½È‚ï¿½
+		return -16;	//[TODO]ï¿½ï¿½ï¿½ï¿½ï¿½Å‘Ò‹@ï¿½ï¿½ï¿½ï¿½
 	}
 	//else
 	pFunc = tasks[execute[0]].funcs[exeFunc].po;	//get next function to execute
 	
-	//ƒ^ƒXƒNÀs
+	//ï¿½^ï¿½Xï¿½Nï¿½ï¿½ï¿½s
 	pFunc();		//execute
 	
-	//Ÿ‚ÉÀs‚·‚éŠÖ”‚Ì”Ô†‚ğw’è‚·‚é
+	//ï¿½ï¿½ï¿½Éï¿½ï¿½sï¿½ï¿½ï¿½ï¿½Öï¿½ï¿½Ì”Ôï¿½ï¿½ï¿½ï¿½wï¿½è‚·ï¿½ï¿½
 	if(exeFunc >= tasks[execute[0]].funcCount - 1)
 	{
 		tasks[execute[0]].funcExecNum = 1;
@@ -250,7 +250,7 @@ int executeTask(void)
 		tasks[execute[0]].funcExecNum++;
 	}
 
-	//ƒ^ƒXƒNÀs”z—ñ‚ğ®”õ‚·‚é
+	//ï¿½^ï¿½Xï¿½Nï¿½ï¿½ï¿½sï¿½zï¿½ï¿½ğ®”ï¿½ï¿½ï¿½ï¿½ï¿½
 	for(i = 0; i < TSK_MAX; i++)
 	{
 		if(i != TSK_MAX - 1)

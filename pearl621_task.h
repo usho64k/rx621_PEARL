@@ -2,9 +2,9 @@
 #define __PEARL621_TASK_H__
 
 
-extern int initTask(void);			//‰Šú‰»ŠÖ”(ƒ^ƒXƒN\‘¢)
+extern int initTask(void);			//ã‚¿ã‚¹ã‚¯æ§‹é€ ã®åˆæœŸåŒ–
 
-extern int selectTask(void);		//ƒƒCƒ“ƒ‹[ƒvŠÖ”(ƒ^ƒXƒN‘I•Ê)
-extern int executeTask(void);		//ƒƒCƒ“ƒ‹[ƒvŠÖ”(ƒ^ƒXƒNÀs)
+extern int selectTask(void);		//ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—ã§èµ·å‹•å¯èƒ½ãªã‚¿ã‚¹ã‚¯ã‚’é¸åˆ¥
+extern int executeTask(void);		//ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—ã§å®Ÿéš›ã«ã‚¿ã‚¹ã‚¯ã‚’å®Ÿè¡Œ
 
 #endif

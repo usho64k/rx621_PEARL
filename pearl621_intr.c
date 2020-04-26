@@ -9,32 +9,28 @@
 //Timer interrupt setting(static)
 static int app_timcnt;
 
-//Timer interrupt en/disable
-static void dis_intr_taskTimer(void);
-static void ena_intr_taskTimer(void);
-
 /********************************************************/
 /*					Public function						*/
 /********************************************************/
 //Timer interrupt setting for OS
 #ifndef MAIN_H
-static void dis_intr_taskTimer(void)
+void dis_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 0;
 }
 //Timer interrupt setting for OS
-static void ena_intr_taskTimer(void)
+void ena_intr_taskTimer(void)
 {
 	TMR0.TCR.BIT.CMIEA = 1;
 }
 #else
 //OS検査用
-static void dis_intr_taskTimer(void)
+void dis_intr_taskTimer(void)
 {
     return;
 }
 
-static void ena_intr_taskTimer(void)
+void ena_intr_taskTimer(void)
 {
     return;
 }
@@ -65,6 +61,8 @@ void tmr_OS_Initialize(void)
 	TMR01.TCORB = 0x00;			//Clear.
 	ICU.IPR[0x68].BYTE = 0x0F;	//interrupt priority is 15(Max)
 	//vector table =>174
+	ICU.IER[0x15].BIT.IEN6 = 1;	//IR174���荞�݂�����
+	ena_intr_taskTimer();
 }
 #else
 void tmr_OS_Initialize(void)
@@ -90,9 +88,7 @@ int tmr_OS_GetTimer(void)
 {
 	int ret;
 	
-	dis_intr_taskTimer();
 	ret = app_timcnt;
-	ena_intr_taskTimer();
 	
 	return ret;
 }

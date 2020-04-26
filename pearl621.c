@@ -13,14 +13,14 @@
 
 void pearl621_init(void)
 {
-	//OS‚Ì‰Šú‰»ŠÖ”
+	//OSåˆæœŸåŒ–
 	tmr_OS_Initialize();
 	initTask();
 }
 
 void tskMainLoop(void)
 {
-	//OS‚ÌƒƒCƒ“ƒ‹[ƒv
+	//OSæœ¬ãƒ«ãƒ¼ãƒ—
 	while(1)
 	{
 		int ercd;
@@ -43,6 +43,18 @@ void tskMainLoop(void)
 
 void osTmrInterrupt(void)
 {
-	//OS‚Ìƒ^ƒCƒ}Š„‚è‚İ
+	//OSã§ä½¿ã†ã‚¿ã‚¤ãƒå‰²ã‚Šè¾¼ã¿
 	tmr_OS_Interrupt();
+}
+
+
+//produced function for interrupt control
+extern void dis_int(void)
+{
+	dis_intr_taskTimer();
+}
+
+extern void ena_int(void)
+{
+	ena_intr_taskTimer();
 }

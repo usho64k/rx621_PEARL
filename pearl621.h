@@ -3,34 +3,34 @@
 
 
 //User Public header
-extern void pearl621_init(void);					//OS‰Šú‰»ŠÖ”
+extern void pearl621_init(void);					//OSï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½
 extern void tskMainLoop(void);						//Main Loop
-extern void osTmrInterrupt(void);					//Š„‚è‚İŠÖ”
+extern void osTmrInterrupt(void);					//ï¿½ï¿½ï¿½èï¿½İŠÖï¿½
 
-//ƒ^ƒXƒN”»’è®
+//ï¿½^ï¿½Xï¿½Nï¿½ï¿½ï¿½è®
 typedef enum judgeType
 {
 	E_NOTYPE,
-	E_TIMER,		//“à•”ƒ^ƒCƒ}”½‰
-	E_IOFLAG,		//I/O”½‰
-	E_MESSAGE,		//ƒ[ƒ‹ƒ{ƒbƒNƒX”½‰
-	E_VALIABLE		//“Á’è•Ï””½‰
+	E_TIMER,		//ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½Cï¿½}ï¿½ï¿½ï¿½ï¿½
+	E_IOFLAG,		//I/Oï¿½ï¿½ï¿½ï¿½
+	E_MESSAGE,		//ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½
+	E_VALIABLE		//ï¿½ï¿½ï¿½ï¿½Ïï¿½ï¿½ï¿½ï¿½ï¿½
 }E_JTYPE;
 
-//ƒ^ƒXƒNŠÖ”ÀsğŒ
+//ï¿½^ï¿½Xï¿½Nï¿½Öï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½
 typedef struct t_tskExinf{
-	E_JTYPE		jType;		//ğŒƒ^ƒCƒv
-	int *		moveVal;	//”»’è‚·‚éğŒ®
-	int *		moveRes;	//ŠÖ”Às‚ÌğŒŒ‹‰Ê
+	E_JTYPE		jType;		//ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½Cï¿½v
+	int *		moveVal;	//ï¿½ï¿½ï¿½è‚·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int *		moveRes;	//ï¿½Öï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }T_JUDGE;
 
-//ƒ^ƒXƒNŠÖ”
+//ï¿½^ï¿½Xï¿½Nï¿½Öï¿½
 typedef struct t_taskfunks{
-	T_JUDGE		*judge;		//ŠÖ”‚ÌÀsğŒ
-	void 		(*po)();	//Às‚·‚éŠÖ”ƒ|ƒCƒ“ƒ^
+	T_JUDGE		*judge;		//ï¿½Öï¿½ï¿½Ìï¿½ï¿½sï¿½ï¿½ï¿½ï¿½
+	void 		(*po)();	//ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½Öï¿½ï¿½|ï¿½Cï¿½ï¿½ï¿½^
 }T_FUNKS;
 
-//ƒ^ƒXƒNì¬—p(T_CTSK‚ÍRTOS—pŒê‚È‚ñ‚¾‚ªcH)
+//ï¿½^ï¿½Xï¿½Nï¿½ì¬ï¿½p(T_CTSKï¿½ï¿½RTOSï¿½pï¿½ï¿½È‚ñ‚¾‚ï¿½ï¿½cï¿½H)
 typedef struct t_ctsk{
 	void *		exinf;		//External information(TBD)
 	int			pri;		//Task Priority(0-15)
@@ -45,6 +45,10 @@ extern int sleepTask(int tskid,int millisecond);	//pearl621Task.c
 extern int wakeupTask(int tskid);					//pearl621Task.c
 
 extern int setTaskFunc(int tskid,const T_FUNKS *func);		//pearl621Task.c
+
+//produced function for interrupt control
+extern void dis_int(void);
+extern void ena_int(void);
 
 #define TSK_MAX		8
 #define TSKFUNK_MAX	24
