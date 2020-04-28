@@ -1,4 +1,5 @@
 #include "pearl621_intr.h"
+#include "pearl621_chatter.h"
 
 #ifdef TESTCODE
 #include "testcode/main.h"
@@ -10,7 +11,7 @@
 static int app_timcnt;
 
 /********************************************************/
-/*					Public function						*/
+/*					OS shared function					*/
 /********************************************************/
 //Timer interrupt setting for OS
 #ifndef MAIN_H
@@ -55,32 +56,37 @@ void tmr_OS_Initialize(void)
 	TMR0.TCR.BIT.OVIE = 0;		//Disable use overflow interrupt
 	TMR1.TCR.BIT.OVIE = 0;		//Disable use overflow interrupt
 	
-	app_timcnt = 0;				//high rayer counter reset.
  	TMR01.TCNT = 0x00;			//Counter reset.
 	TMR01.TCORA = 1500;			// 48 MHz / 32 = 1500kHz -> 1kHz
 	TMR01.TCORB = 0x00;			//Clear.
 	ICU.IPR[0x68].BYTE = 0x0F;	//interrupt priority is 15(Max)
 	//vector table =>174
 	ICU.IER[0x15].BIT.IEN6 = 1;	//IR174���荞�݂�����
-	ena_intr_taskTimer();
-}
-#else
+#else	//for testcode
 void tmr_OS_Initialize(void)
 {
-	//For Linux Test Env.(Clear the variable only)
-    app_timcnt = 0;
-}
 #endif
+	app_timcnt = 0;				//high layer counter reset.
+
+	init_chatteringDrv();		//init chattering driver
+	ena_intr_taskTimer();
+}
 
 //Set at vector table 174
 void tmr_OS_Interrupt(void)
 {
 	dis_intr_taskTimer();
+	
+	//app timer count process
 	app_timcnt++;
 	if(app_timcnt == 65536)
 	{
 		app_timcnt = 0;
 	}
+
+	//chattering driver process
+	checkPortChattering();		//[要検証]そんなに重くないと思うけど…
+
 	ena_intr_taskTimer();
 }
 

@@ -1,5 +1,5 @@
-#ifndef __PEARL621_INTR_H__
-#define __PEARL621_INTR_H__
+#ifndef PEARL621_INTR_H
+#define PEARL621_INTR_H
 
 
 extern void tmr_OS_Initialize(void);				//timer for OS
