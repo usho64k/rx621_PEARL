@@ -47,6 +47,12 @@ void osTmrInterrupt(void)
 	tmr_OS_Interrupt();
 }
 
+int getTimer(void)
+{
+	//OSカウンタ値を直接見る関数
+	return tmr_OS_GetTimer();
+
+}
 
 //produced function for interrupt control
 extern void dis_int(void)

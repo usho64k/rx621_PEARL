@@ -3,7 +3,7 @@
 #include "testcode/main.h"
 #endif
 
-#include "pearl621.h"
+#include "pearl621_task_usr.h"
 #include "pearl621_task.h"
 #include "pearl621_intr.h"
 

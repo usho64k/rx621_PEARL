@@ -1,3 +1,4 @@
+#include "pearl621_chatter_usr.h"
 #include "pearl621_chatter.h"
 
 
@@ -22,7 +23,8 @@ void init_chatteringDrv(void)
 		chatter_setting[i].c_num = 0;
 		chatter_setting[i].port = (void *)(0);
 		chatter_setting[i].bits = 0;
-		chatter_setting[i].v_func = (void *)(0);
+		chatter_setting[i].v_func_on = (void *)(0);
+		chatter_setting[i].v_func_off = (void *)(0);
 
 		data_chatter[i] = 0;
 		state_chatter[i] = 0;
@@ -57,10 +59,21 @@ void checkPortChattering(void)
 			{
 				//chattering reset and change state and trigger flag is to be on.
 				state_chatter[i] = (*(chatter_setting[i].port) & chk);
-				if(chatter_setting[i].v_func != (void *)0)
+				if(state_chatter[i] != 0)
 				{
-					chatter_setting[i].v_func();
+					if(chatter_setting[i].v_func_on != (void *)0)
+					{
+						chatter_setting[i].v_func_on();
+					}
 				}
+				else
+				{
+					if(chatter_setting[i].v_func_off != (void *)0)
+					{
+						chatter_setting[i].v_func_off();
+					}
+				}
+				
 				flag_chatter[i] = 1;
 				data_chatter[i] = 0;
 			}
@@ -74,7 +87,7 @@ void checkPortChattering(void)
 }
 
 //flag reset.
-void resetFlag(int id)
+void resetFlagChatter(int id)
 {
 	if((id >= 0) && (id < chatter_num))
 	{
@@ -83,7 +96,7 @@ void resetFlag(int id)
 }
 
 //1... flag stood ,  0... flag not stood
-int getFlag(int id)
+int getFlagChatter(int id)
 {
 	if((id >= 0) && (id < chatter_num))
 	{
@@ -94,7 +107,7 @@ int getFlag(int id)
 }
 
 //return ercd
-int setChatteringDrv(T_CHATTER t)
+int createChatter(T_CHATTER t)
 {
 	if(t.port == 0)
 	{
@@ -113,7 +126,8 @@ int setChatteringDrv(T_CHATTER t)
 	chatter_setting[chatter_num].port = t.port;
 	chatter_setting[chatter_num].c_num = t.c_num;
 	chatter_setting[chatter_num].bits = t.bits;
-	chatter_setting[chatter_num].v_func = t.v_func;
+	chatter_setting[chatter_num].v_func_on = t.v_func_on;
+	chatter_setting[chatter_num].v_func_off = t.v_func_off;
 	chatter_num++;
 
     return 0;
