@@ -1,13 +1,14 @@
 #include "pearl621_chatter_usr.h"
 #include "pearl621_chatter.h"
+#include "..\iodefine.h"
 
 
-static T_CHATTER chatter_setting[32];
-static unsigned char data_chatter[32];
-static unsigned char state_chatter[32];
-static unsigned char flag_chatter[32];
+volatile static T_CHATTER chatter_setting[32];
+volatile static unsigned char data_chatter[32];
+volatile static unsigned char state_chatter[32];
+volatile static unsigned char flag_chatter[32];
 
-static int chatter_num;
+volatile static int chatter_num;
 
 
 /********************************************************/
@@ -21,7 +22,7 @@ void init_chatteringDrv(void)
 	for(i = 0; i < 32; i++)
 	{
 		chatter_setting[i].c_num = 0;
-		chatter_setting[i].port = (void *)(0);
+		chatter_setting[i].judge = (void *)(0);
 		chatter_setting[i].bits = 0;
 		chatter_setting[i].v_func_on = (void *)(0);
 		chatter_setting[i].v_func_off = (void *)(0);
@@ -42,9 +43,10 @@ void checkPortChattering(void)
 		int j;
 		unsigned char chk = 0x01;
 		//if port is 0, it is not set.
-		if(chatter_setting[i].port == 0)
+		if(chatter_setting[i].judge == (void *)(0))
 			continue;
 		
+		PORT4.DR.BIT.B6 = 1;
 		//make value of checking bitfield
 		for(j = 0; j < chatter_setting[i].bits-1;j++)
 		{
@@ -52,13 +54,13 @@ void checkPortChattering(void)
 		}
 
 		//check chattering
-		if((*(chatter_setting[i].port) & chk) != state_chatter[i])
+		if((chatter_setting[i].judge() & chk) != state_chatter[i])
 		{
 			data_chatter[i]++;
 			if(data_chatter[i] == chatter_setting[i].c_num)
 			{
 				//chattering reset and change state and trigger flag is to be on.
-				state_chatter[i] = (*(chatter_setting[i].port) & chk);
+				state_chatter[i] = (chatter_setting[i].judge() & chk);
 				if(state_chatter[i] != 0)
 				{
 					if(chatter_setting[i].v_func_on != (void *)0)
@@ -72,6 +74,7 @@ void checkPortChattering(void)
 					{
 						chatter_setting[i].v_func_off();
 					}
+					PORT4.DR.BIT.B6 = 0;
 				}
 				
 				flag_chatter[i] = 1;
@@ -109,7 +112,7 @@ int getFlagChatter(int id)
 //return ercd
 int createChatter(T_CHATTER t)
 {
-	if(t.port == 0)
+	if(t.judge == 0)
 	{
 		return -4;		//iregular pointer
 	}
@@ -123,7 +126,7 @@ int createChatter(T_CHATTER t)
 	}
 
     //no problem and set object
-	chatter_setting[chatter_num].port = t.port;
+	chatter_setting[chatter_num].judge = t.judge;
 	chatter_setting[chatter_num].c_num = t.c_num;
 	chatter_setting[chatter_num].bits = t.bits;
 	chatter_setting[chatter_num].v_func_on = t.v_func_on;
