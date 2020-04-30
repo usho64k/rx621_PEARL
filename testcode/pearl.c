@@ -12,7 +12,7 @@
 #include "main.h"
 
 //タスクコード用
-#include "dummyTask/dummyTask1.h"
+#include "dumtask1/dummyTask1.h"
 #include "dumtask2/dummyTask2.h"
 
 
