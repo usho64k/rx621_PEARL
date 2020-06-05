@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: cd
-      run: cd testcode/
+      run: cd /home/runner/work/rx621_PEARL/rx621_PEARL/testcode/
     - name: make
       run: make
     - name: make check
