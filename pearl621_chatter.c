@@ -1,5 +1,6 @@
-
+#ifndef TESTCODE
 #include "..\iodefine.h"
+#endif
 #include "pearl621_chatter_usr.h"
 #include "pearl621_chatter.h"
 
@@ -25,7 +26,7 @@ void init_chatteringDrv(void)
 		chatter_setting[i].bits = 0;
 		chatter_setting[i].v_func_on = (void *)(0);
 		chatter_setting[i].v_func_off = (void *)(0);
-		chatter_setting[i].port = (volatile unsigned char __evenaccess *)(0);
+		chatter_setting[i].port = (volatile unsigned char *)(0);
 
 		data_chatter[i] = 0;
 		state_chatter[i] = 0;
@@ -46,7 +47,6 @@ void checkPortChattering(void)
 		if(chatter_setting[i].port == (void *)(0))
 			continue;
 		
-		PORT4.DR.BIT.B6 = 1;
 		//make value of checking bitfield
 		for(j = 0; j < chatter_setting[i].bits-1;j++)
 		{
@@ -74,7 +74,6 @@ void checkPortChattering(void)
 					{
 						chatter_setting[i].v_func_off();
 					}
-					PORT4.DR.BIT.B6 = 0;
 				}
 				
 				flag_chatter[i] = 1;

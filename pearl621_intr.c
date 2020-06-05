@@ -1,5 +1,6 @@
 #include "pearl621_intr.h"
 #include "pearl621_chatter.h"
+#include "pearl621_task.h"
 
 #ifdef TESTCODE
 #include "testcode/main.h"
@@ -86,6 +87,9 @@ void tmr_OS_Interrupt(void)
 
 	//chattering driver process
 	checkPortChattering();		//[要検証]そんなに重くないと思うけど…
+
+	//checkWakeup
+	checkWakeupTask();			//タスクのSLEPT状態をWakeupにさせる処理
 
 	ena_intr_taskTimer();
 }

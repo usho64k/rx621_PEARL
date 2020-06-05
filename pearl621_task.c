@@ -155,41 +155,98 @@ int wakeupTask(int tskid)
 int selectTask(void)
 {
 	int i,j;
-	//���s�^�X�N��̏��
+	//起動状態のタスクを、優先度を考慮してタスク実行列に配置する
 	for(i = 0; i < taskCount; i++)
 	{
 		if(tasks[i].status == E_EXECUTABLE)
 		{
-			//�������^�X�N
-			//Executable�Ȃ�܂�execute�z��ɓ����Ă��Ȃ�(�Ǝv��)
+			//起動状態のとき
+			//Executable条件ならExecute列にタスクIDがなければ追加
 			for(j = 0; j < taskCount; j++)
 			{
 				if(execute[j] == TSK_NO_DEFINE)
 				{
-					//tsk no define -> 100% this place.
+					//tsk no define (=blanc) -> 100% this place.
 					execute[j] = i;
 					tasks[i].status &= ~E_ENWUP;
 					break;
 				}
 				
-				//�D��x���l�����Ă��̊Ԃɓ����
+				//自分より優先度が低い、Execute列にあるタスクIDをチェックする。
 				if(tasks[execute[j]].pri < tasks[i].pri)
 				{
 					int k;
-					//���̃^�X�N�����ׂČ��ɒǂ����
+					//後ろから探索、後ろに１つずつズラす
 					for(k = TSK_MAX - 1; k > j; k--)
 					{
 						execute[k] = execute[k - 1];
 					}
+					//優先タスクを入れる
 					execute[j] = i;
 					tasks[i].status &= ~E_ENWUP;
 					break;
 				}
 			}
 		}
-		else if((tasks[i].status & E_SLEPT) == 0x00)
+	}
+	if(execute[0] != TSK_NO_DEFINE)
+	{
+		return 0;
+	}
+	return -32;
+}
+//execute(pearl621)
+int executeTask(void)
+{
+	int i;
+	int exeFunc = tasks[execute[0]].funcExecNum;
+	void (*pFunc)();
+	
+	if(execute[0] < 0)
+	{
+		//実行列が負の値(タスクIDではない)
+		return -16;	//[TODO]
+	}
+	//else
+	pFunc = tasks[execute[0]].funcs[exeFunc].po;	//get next function to execute
+	
+	//タスク関数実行
+	pFunc();		//execute
+	
+	//関数実行後は実行した関数の次の関数について吟味するように参照先を変更する
+	if(exeFunc >= tasks[execute[0]].funcCount - 1)
+	{
+		tasks[execute[0]].funcExecNum = 1;
+	}
+	else
+	{
+		tasks[execute[0]].funcExecNum++;
+	}
+
+	//実行する予定のタスクIDを、前にずらす
+	for(i = 0; i < TSK_MAX; i++)
+	{
+		if(i != TSK_MAX - 1)
 		{
-			//������Ȃ�����executable�ɕω��\�ȃ^�X�N
+			execute[i] = execute[i + 1];	//function executable array is final shift.
+		}
+		else
+		{
+			execute[i] = TSK_NO_DEFINE;		//end of array is to be no-define.
+		}
+	}
+
+	return 1;
+}
+
+void checkWakeupTask(void)
+{
+	//SLEPT状態のタスクをWakeup状態にするか判定する
+	int i;
+	for(i = 0; i < taskCount; i++)
+	{
+		if((tasks[i].status & E_SLEPT) == 0x00)
+		{
 			int exeFunc = tasks[i].funcExecNum;
 			if(tasks[i].funcs[exeFunc].judge->jType == E_VALIABLE)
 			{
@@ -216,52 +273,4 @@ int selectTask(void)
 			}
 		}
 	}
-	if(execute[0] != TSK_NO_DEFINE)
-	{
-		return 0;
-	}
-	return -32;
-}
-//execute(pearl621)
-int executeTask(void)
-{
-	int i;
-	int exeFunc = tasks[execute[0]].funcExecNum;
-	void (*pFunc)();
-	
-	if(execute[0] < 0)
-	{
-		//���s�\�Ȃ�
-		return -16;	//[TODO]�����őҋ@����
-	}
-	//else
-	pFunc = tasks[execute[0]].funcs[exeFunc].po;	//get next function to execute
-	
-	//�^�X�N���s
-	pFunc();		//execute
-	
-	//���Ɏ��s����֐��̔ԍ����w�肷��
-	if(exeFunc >= tasks[execute[0]].funcCount - 1)
-	{
-		tasks[execute[0]].funcExecNum = 1;
-	}
-	else
-	{
-		tasks[execute[0]].funcExecNum++;
-	}
-
-	//�^�X�N���s�z��𐮔�����
-	for(i = 0; i < TSK_MAX; i++)
-	{
-		if(i != TSK_MAX - 1)
-		{
-			execute[i] = execute[i + 1];	//function executable array is final shift.
-		}
-		else
-		{
-			execute[i] = TSK_NO_DEFINE;		//end of array is to be no-define.
-		}
-	}
-
-	return 1;
 }
