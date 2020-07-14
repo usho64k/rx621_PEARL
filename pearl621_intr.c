@@ -62,7 +62,7 @@ void tmr_OS_Initialize(void)
 	TMR01.TCORB = 0x00;			//Clear.
 	ICU.IPR[0x68].BYTE = 0x0F;	//interrupt priority is 15(Max)
 	//vector table =>174
-	ICU.IER[0x15].BIT.IEN6 = 1;	//IR174���荞�݂�����
+	ICU.IER[0x15].BIT.IEN6 = 1;	//IR174 Interrupt Enable ON(TMR0 CMIEA/CMIEB)
 #else	//for testcode
 void tmr_OS_Initialize(void)
 {
@@ -94,6 +94,7 @@ void tmr_OS_Interrupt(void)
 	ena_intr_taskTimer();
 }
 
+//Get OS Timer(usbale sometimes.)
 int tmr_OS_GetTimer(void)
 {
 	int ret;

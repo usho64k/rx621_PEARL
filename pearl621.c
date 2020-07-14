@@ -29,13 +29,11 @@ void tskMainLoop(void)
 		{
 			ercd = executeTask();
 		}
+#ifdef MAIN_H
 		else
 		{
-#ifdef MAIN_H
 			printf("No Select");
-#endif
 		}
-#ifdef MAIN_H
 		sleep(1);
 #endif
 	}
